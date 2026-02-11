@@ -139,6 +139,14 @@
             flex-direction: column;
         }
 
+        .article-title {
+            /* text-align: center; */
+            font-size: 1.5em;
+            font-weight: 900;
+            margin-bottom: 1.5em; /* 标题和正文的距离 */
+            color: var(--text-main);
+        }
+
         .output-area {
             font-family: var(--font-reading);
             font-size: var(--reading-size);
@@ -210,6 +218,57 @@
         }
         
         .footer-note { margin-top: auto; font-size: 0.8rem; color: #94a3b8; text-align: center; }
+
+        /* === 打印专用样式 (导出PDF时生效) === */
+        @media print {
+            /* 1. 隐藏不需要的元素 */
+            .sidebar, 
+            .footer-note, 
+            button, 
+            input[type=range] { 
+                display: none !important; 
+            }
+
+            /* 2. 重置容器布局，取消分栏 */
+            body, .container {
+                display: block !important;
+                height: auto !important;
+                width: 100% !important;
+                padding: 0 !important;
+                background: white !important; /* 去掉背景灰底 */
+                margin: 0 !important;
+            }
+
+            /* 3. 优化主内容区展示 */
+            .main-content {
+                box-shadow: none !important; /* 去掉阴影 */
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                overflow: visible !important; /* 关键：确保长文能跨页打印，不被截断 */
+                height: auto !important;
+            }
+
+            /* 4. 调整文字排版适配 A4 纸 */
+            .output-area {
+                font-size: 14pt !important; /* 打印时字号稍微调整适合书写 */
+                line-height: 2.2 !important; /* 行间距加大，方便默写填写 */
+                color: black !important;
+            }
+            
+            /* 5. 确保 QA 模式卡片也能打印 */
+            .qa-container {
+                display: block !important;
+                height: auto !important;
+            }
+            
+            .qa-card {
+                font-size: 16pt !important;
+                border: none !important;
+            }
+            .qa-hint { display: none; } /* 打印时不显示提示语 */
+        }
     </style>
 </head>
 <body>
@@ -223,20 +282,21 @@
         </div>
 
         <div>
-            <h2>1. 内容源</h2>
+            <h2>内容源</h2>
             <div class="control-group">
                 <select id="presetSelect" onchange="loadPreset()">
                     <option value="" disabled selected>-- 快速加载必背篇目 --</option>
                 </select>
             </div>
             <div class="control-group">
+                <input type="text" id="customTitle" placeholder="在此输入标题 (可选)" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px;">
                 <textarea id="customInput" placeholder="在此输入文本..."></textarea>
             </div>
             <button class="primary-btn" onclick="applyTextAndReset()">重置 / 应用文本</button>
         </div>
 
         <div>
-            <h2>2. 记忆模式</h2>
+            <h2>记忆模式</h2>
             <div class="radio-group">
                 <label class="radio-label">
                     <input type="radio" name="mode" value="all" checked onchange="updateView()">
@@ -283,7 +343,7 @@
         </div>
 
         <div>
-            <h2>3. 视觉与显示</h2>
+            <h2>视觉与显示</h2>
             <div class="control-group">
                 <select id="styleSelect" onchange="updateStyle()">
                     <option value="style-box" selected>遮盖样式：方框 (□)</option>
@@ -299,6 +359,10 @@
                     <span id="fontSizeDisplay">24px</span>
                 </div>
                 <input type="range" id="fontSizeSlider" min="14" max="48" value="24" oninput="updateFontSize()">
+            </div>
+            <!-- 【新增】导出按钮 -->
+            <div class="control-group" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0;">
+                <button class="primary-btn" style="background-color: #475569;" onclick="window.print()">🖨️ 导出为默写纸 / PDF</button>
             </div>
         </div>
 
@@ -368,6 +432,7 @@
     function loadPreset() {
         const key = document.getElementById('presetSelect').value;
         if (presets[key]) {
+            document.getElementById('customTitle').value = presets[key].title;
             document.getElementById('customInput').value = presets[key].content;
             applyTextAndReset();
         }
@@ -442,6 +507,11 @@
 
         const parts = text.split(/([^\u4e00-\u9fa5]+)/g);
         let html = '';
+
+        const titleVal = document.getElementById('customTitle').value;
+        if (titleVal) {
+            html += `<div class="article-title">${titleVal}</div>`;
+        }
 
         parts.forEach(part => {
             if (!part) return;

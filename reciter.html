@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高考语文背诵辅助器 Pro</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --accent: #10b981;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-reading: "Times New Roman", "Songti SC", "Noto Serif SC", STSong, serif;
+            --reading-size: 24px; /* 默认字体大小 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            height: calc(100vh - 40px);
+        }
+
+        /* 左侧控制面板 */
+        .sidebar {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-sub); margin-bottom: 10px; font-weight: 600; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; }
+
+        .control-group { margin-bottom: 8px; }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            resize: vertical;
+            font-family: var(--font-reading);
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { outline: none; border-color: var(--primary); }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button.primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+        button.primary-btn:hover { background: var(--primary-hover); }
+
+        button.outline-btn {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        button.outline-btn:hover { background: #eff6ff; }
+
+        .radio-group { display: flex; flex-direction: column; gap: 6px; }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.1s;
+            font-size: 0.95rem;
+        }
+        .radio-label:hover { background: #f1f5f9; }
+        .radio-label input { margin-right: 10px; accent-color: var(--primary); }
+        .radio-label.highlight {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* 滑块通用样式 */
+        .slider-wrapper { margin-top: 5px; }
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px;}
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
+
+        /* 右侧展示区域 */
+        .main-content {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-area {
+            font-family: var(--font-reading);
+            font-size: var(--reading-size);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text-main);
+            transition: font-size 0.2s;
+        }
+
+        /* QA 模式专用容器 */
+        .qa-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+        .qa-card {
+            font-family: var(--font-reading);
+            font-size: calc(var(--reading-size) * 1.5); /* QA模式字号大一点 */
+            margin-bottom: 40px;
+            line-height: 2;
+        }
+        .qa-hint {
+            color: var(--text-sub);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        /* 遮盖样式逻辑 */
+        .char {
+            display: inline-block;
+            min-width: 0.5em;
+            text-align: center;
+            transition: color 0.2s;
+            line-height: 1.1em;
+        }
+
+        .punctuation { color: var(--text-sub); font-weight: bold; margin: 0 2px; }
+
+        /* 遮盖状态 */
+        .masked {
+            color: transparent;
+            user-select: none;
+            cursor: help;
+            position: relative;
+        }
+        /* 鼠标悬停偷看 */
+        .masked:hover {
+            color: var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 2px;
+        }
+        .masked:hover::after { content: none; }
+
+        /* 遮盖样式：下划线 */
+        .style-underline .masked { border-bottom: 2px solid #cbd5e1; }
+        /* 遮盖样式：方框 */
+        .style-box .masked { border: 1px solid #cbd5e1; border-radius: 4px; margin: 0 1px; background: #f8fafc; min-width: 1em;}
+        /* 遮盖样式：符号 */
+        .style-symbol .masked::after { content: '□'; position: absolute; left: 0; top: 0; width: 100%; color: #cbd5e1; }
+
+        @media (max-width: 768px) {
+            body { height: auto; padding: 10px; }
+            .container { grid-template-columns: 1fr; height: auto; }
+            .sidebar { height: auto; }
+            .main-content { min-height: 50vh; padding: 20px; }
+        }
+        
+        .footer-note { margin-top: auto; font-size: 0.8rem; color: #94a3b8; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 侧边栏：设置与输入 -->
+    <aside class="sidebar">
+        <div>
+            <h1>📖 背诵助手 Pro</h1>
+            <p style="color: var(--text-sub); font-size: 0.9rem;">高考语文必备篇目辅助</p>
+        </div>
+
+        <div>
+            <h2>1. 内容源</h2>
+            <div class="control-group">
+                <select id="presetSelect" onchange="loadPreset()">
+                    <option value="" disabled selected>-- 快速加载必背篇目 --</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <textarea id="customInput" placeholder="在此输入文本..."></textarea>
+            </div>
+            <button class="primary-btn" onclick="applyTextAndReset()">重置 / 应用文本</button>
+        </div>
+
+        <div>
+            <h2>2. 记忆模式</h2>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="mode" value="all" checked onchange="updateView()">
+                    全部遮盖 (默写)
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="mode" value="head1" onchange="updateView()">
+                    提示首字
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="mode" value="head2" onchange="updateView()">
+                    提示首 2 字
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="mode" value="headTail" onchange="updateView()">
+                    提示首尾字
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="mode" value="random" onchange="updateView()">
+                    随机挖空
+                </label>
+                <!-- 随机比例滑块 -->
+                <div class="slider-wrapper" id="randomConfig" style="display:none; padding: 0 12px 8px 34px;">
+                    <div class="slider-header">
+                        <span>挖空比例</span>
+                        <span id="ratioDisplay" style="color:var(--primary); font-weight:bold;">50%</span>
+                    </div>
+                    <input type="range" id="randomRatio" min="0" max="100" value="50" oninput="updateRatioDisplay(); updateView()">
+                </div>
+
+                <!-- 新功能：QA测试 -->
+                <label class="radio-label highlight">
+                    <input type="radio" name="mode" value="qa" onchange="updateView()">
+                    ⚡️ 上下句随机测试
+                </label>
+            </div>
+            
+            <!-- QA模式下的专属按钮 -->
+            <div id="qaControls" style="display:none;">
+                <button class="outline-btn" onclick="nextQuestion()">🔄 换一题</button>
+                <button class="outline-btn" style="border-color: #10b981; color: #10b981; margin-top: 8px;" onclick="showQaAnswer()">👁️ 显示答案</button>
+
+            </div>
+        </div>
+
+        <div>
+            <h2>3. 视觉与显示</h2>
+            <div class="control-group">
+                <select id="styleSelect" onchange="updateStyle()">
+                    <option value="style-box" selected>遮盖样式：方框 (□)</option>
+                    <option value="style-underline">遮盖样式：下划线 (_)</option>
+                    <!-- <option value="style-symbol">遮盖样式：符号 (□)</option> -->
+                    <option value="style-invisible">遮盖样式：隐形 ( )</option>
+                </select>
+            </div>
+            <!-- 字体大小滑块 -->
+            <div class="slider-wrapper">
+                <div class="slider-header">
+                    <span>字体大小</span>
+                    <span id="fontSizeDisplay">24px</span>
+                </div>
+                <input type="range" id="fontSizeSlider" min="14" max="48" value="24" oninput="updateFontSize()">
+            </div>
+        </div>
+
+        <div class="footer-note">
+            提示：鼠标悬停(或点击)遮盖处可偷看答案。
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content" id="outputContainer">
+        <!-- 普通模式输出区 -->
+        <div id="output" class="output-area style-box"></div>
+        
+        <!-- QA模式输出区 (默认隐藏) -->
+        <div id="qaOutput" class="qa-container" style="display: none;">
+            <div class="qa-hint">请补全缺失的句子 (严格遵循句读)</div>
+            <div id="qaCardContent" class="qa-card style-box"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // === 预设数据库 ===
+    const presets = {
+        "shudaonan": {
+            title: "蜀道难 (李白)",
+            content: "噫吁嚱，危乎高哉！蜀道之难，难于上青天！蚕丛及鱼凫，开国何茫然！尔来四万八千岁，不与秦塞通人烟。西当太白有鸟道，可以横绝峨眉巅。地崩山摧壮士死，然后天梯石栈相钩连。上有六龙回日之高标，下有冲波逆折之回川。黄鹤之飞尚不得过，猿猱欲度愁攀援。青泥何盘盘，百步九折萦岩峦。扪参历井仰胁息，以手抚膺坐长叹。\n问君西游何时还？畏途巉岩不可攀。但见悲鸟号古木，雄飞雌从绕林间。又闻子规啼夜月，愁空山。蜀道之难，难于上青天，使人听此凋朱颜！连峰去天不盈尺，枯松倒挂倚绝壁。飞湍瀑流争喧豗，砯崖转石万壑雷。其险也如此，嗟尔远道之人胡为乎来哉！\n剑阁峥嵘而崔嵬，一夫当关，万夫莫开。所守或匪亲，化为狼与豺。朝避猛虎，夕避长蛇；磨牙吮血，杀人如麻。锦城虽云乐，不如早还家。蜀道之难，难于上青天，侧身西望长咨嗟！"
+        },
+        "chibifu": {
+            title: "赤壁赋 (苏轼)",
+            content: "壬戌之秋，七月既望，苏子与客泛舟游于赤壁之下。清风徐来，水波不兴。举酒属客，诵明月之诗，歌窈窕之章。少焉，月出于东山之上，徘徊于斗牛之间。白露横江，水光接天。纵一苇之所如，凌万顷之茫然。浩浩乎如冯虚御风，而不知其所止；飘飘乎如遗世独立，羽化而登仙。\n于是饮酒乐甚，扣舷而歌之。歌曰：“桂棹兮兰桨，击空明兮溯流光。渺渺兮予怀，望美人兮天一方。”客有吹洞箫者，倚歌而和之。其声呜呜然，如怨如慕，如泣如诉，余音袅袅，不绝如缕。舞幽壑之潜蛟，泣孤舟之嫠妇。\n苏子愀然，正襟危坐而问客曰：“何为其然也? ”客曰：“‘月明星稀，乌鹊南飞’，此非曹孟德之诗乎? 西望夏口，东望武昌，山川相缪，郁乎苍苍，此非孟德之困于周郎者乎? 方其破荆州，下江陵，顺流而东也，舳舻千里，旌旗蔽空，酾酒临江，横槊赋诗，固一世之雄也，而今安在哉? 况吾与子渔樵于江渚之上，侣鱼虾而友麋鹿，驾一叶之扁舟，举匏樽以相属。寄蜉蝣于天地，渺沧海之一粟。哀吾生之须臾，羡长江之无穷。挟飞仙以遨游，抱明月而长终。知不可乎骤得，托遗响于悲风。”\n苏子曰：“客亦知夫水与月乎? 逝者如斯，而未尝往也；盈虚者如彼，而卒莫消长也。盖将自其变者而观之，则天地曾不能以一瞬；自其不变者而观之，则物与我皆无尽也，而又何羡乎! 且夫天地之间，物各有主，苟非吾之所有，虽一毫而莫取。惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色，取之无禁，用之不竭，是造物者之无尽藏也，而吾与子之所共适。”\n客喜而笑，洗盏更酌。肴核既尽，杯盘狼籍。相与枕藉乎舟中，不知东方之既白。"
+        },
+        "pipaxing": {
+            title: "琵琶行 (白居易)",
+            content: "浔阳江头夜送客，枫叶荻花秋瑟瑟。主人下马客在船，举酒欲饮无管弦。醉不成欢惨将别，别时茫茫江浸月。\n忽闻水上琵琶声，主人忘归客不发。寻声暗问弹者谁，琵琶声停欲语迟。移船相近邀相见，添酒回灯重开宴。千呼万唤始出来，犹抱琵琶半遮面。转轴拨弦三两声，未成曲调先有情。弦弦掩抑声声思，似诉平生不得志。低眉信手续续弹，说尽心中无限事。轻拢慢捻抹复挑，初为《霓裳》后《六幺》。大弦嘈嘈如急雨，小弦切切如私语。嘈嘈切切错杂弹，大珠小珠落玉盘。间关莺语花底滑，幽咽泉流冰下难。冰泉冷涩弦凝绝，凝绝不通声暂歇。别有幽愁暗恨生，此时无声胜有声。银瓶乍破水浆迸，铁骑突出刀枪鸣。曲终收拨当心画，四弦一声如裂帛。东船西舫悄无言，唯见江心秋月白。\n沉吟放拨插弦中，整顿衣裳起敛容。自言本是京城女，家在虾蟆陵下住。十三学得琵琶成，名属教坊第一部。曲罢曾教善才服，妆成每被秋娘妒。五陵年少争缠头，一曲红绡不知数。钿头银篦击节碎，血色罗裙翻酒污。今年欢笑复明年，秋月春风等闲度。弟走从军阿姨死，暮去朝来颜色故。门前冷落鞍马稀，老大嫁作商人妇。商人重利轻别离，前月浮梁买茶去。去来江口守空船，绕船月明江水寒。夜深忽梦少年事，梦啼妆泪红阑干。\n我闻琵琶已叹息，又闻此语重唧唧。同是天涯沦落人，相逢何必曾相识！我从去年辞帝京，谪居卧病浔阳城。浔阳地僻无音乐，终岁不闻丝竹声。住近湓江地低湿，黄芦苦竹绕宅生。其间旦暮闻何物？杜鹃啼血猿哀鸣。春江花朝秋月夜，往往取酒还独倾。岂无山歌与村笛？呕哑嘲哳难为听。今夜闻君琵琶语，如听仙乐耳暂明。莫辞更坐弹一曲，为君翻作《琵琶行》。\n感我此言良久立，却坐促弦弦转急。凄凄不似向前声，满座重闻皆掩泣。座中泣下谁最多？江州司马青衫湿。"
+        },
+        "shishuo": {
+            title: "师说 (韩愈)",
+            content: "古之学者必有师。师者，所以传道受业解惑也。人非生而知之者，孰能无惑？惑而不从师，其为惑也，终不解矣。生乎吾前，其闻道也固先乎吾，吾从而师之；生乎吾后，其闻道也亦先乎吾，吾从而师之。吾师道也，夫庸知其年之先后生于吾乎？是故无贵无贱，无长无少，道之所存，师之所存也。\n嗟乎！师道之不传也久矣！欲人之无惑也难矣！古之圣人，其出人也远矣，犹且从师而问焉；今之众人，其下圣人也亦远矣，而耻学于师。是故圣益圣，愚益愚。圣人之所以为圣，愚人之所以为愚，其皆出于此乎？爱其子，择师而教之；于其身也，则耻师焉，惑矣。彼童子之师，授之书而习其句读者，非吾所谓传其道解其惑者也。句读之不知，惑之不解，或师焉，或不焉，小学而大遗，吾未见其明也。巫医乐师百工之人，不耻相师。士大夫之族，曰师曰弟子云者，则群聚而笑之。问之，则曰：“彼与彼年相若也，道相似也，位卑则足羞，官盛则近谀。”呜呼！师道之不复，可知矣。巫医乐师百工之人，君子不齿，今其智乃反不能不及，其可怪也欤！\n圣人无常师。孔子师郯子、苌弘、师襄、老聃。郯子之徒，其贤不及孔子。孔子曰：“三人行，则必有我师。”是故弟子不必不如师，师不必贤于弟子，闻道有先后，术业有专攻，如是而已。\n李氏子蟠，年十七，好古文，六艺经传皆通习之，不拘于时，学于余。余嘉其能行古道，作《师说》以贻之。"
+        },
+        "xiaoyaoyou": {
+            title: "逍遥游 (节选)",
+            content: "北冥有鱼，其名为鲲。鲲之大，不知其几千里也；化而为鸟，其名为鹏。鹏之背，不知其几千里也；怒而飞，其翼若垂天之云。是鸟也，海运则将徙于南冥。南冥者，天池也。《齐谐》者，志怪者也。《谐》之言曰：“鹏之徙于南冥也，水击三千里，抟扶摇而上者九万里，去以六月息者也。”野马也，尘埃也，生物之以息相吹也。天之苍苍，其正色邪？其远而无所至极邪？其视下也，亦若是则已矣。且夫水之积也不厚，则其负大舟也无力。覆杯水于坳堂之上，则芥为之舟；置杯焉则胶，水浅而舟大也。风之积也不厚，则其负大翼也无力。故九万里，则风斯在下矣，而后乃今培风；背负青天，而莫之夭阏者，而后乃今将图南。蜩与学鸠笑之曰：“我决起而飞，抢榆枋而止，时则不至，而控于地而已矣，奚以之九万里而南为？”适莽苍者，三餐而反，腹犹果然；适百里者，宿舂粮；适千里者，三月聚粮。之二虫又何知！小知不及大知，小年不及大年。奚以知其然也？朝菌不知晦朔，蟪蛄不知春秋，此小年也。楚之南有冥灵者，以五百岁为春，五百岁为秋；上古有大椿者，以八千岁为春，八千岁为秋，此大年也。而彭祖乃今以久特闻，众人匹之，不亦悲乎！"
+        },
+        "aguifang": {
+            title: "阿房宫赋 (杜牧)",
+            content: "六王毕，四海一，蜀山兀，阿房出。覆压三百余里，隔离天日。骊山北构而西折，直走咸阳。二川溶溶，流入宫墙。五步一楼，十步一阁；廊腰缦回，檐牙高啄；各抱地势，钩心斗角。盘盘焉，囷囷焉，蜂房水涡，矗不知其几千万落。长桥卧波，未云何龙？复道行空，不霁何虹？高低冥迷，不知西东。歌台暖响，春光融融；舞殿冷袖，风雨凄凄。一日之内，一宫之间，而气候不齐。\n妃嫔媵嫱，王子皇孙，辞楼下殿，辇来于秦。朝歌夜弦，为秦宫人。明星荧荧，开妆镜也；绿云扰扰，梳晓鬟也；渭流涨腻，弃脂水也；烟斜雾横，焚椒兰也。雷霆乍惊，宫车过也；辘辘远听，杳不知其所之也。一肌一容，尽态极妍，缦立远视，而望幸焉。有不见者，三十六年。\n燕赵之收藏，韩魏之经营，齐楚之精英，几世几年，剽掠其人，倚叠如山。一旦不能有，输来其间。鼎铛玉石，金块珠砾，弃掷逦迤，秦人视之，亦不甚惜。\n嗟乎！一人之心，千万人之心也。秦爱纷奢，人亦念其家。奈何取之尽锱铢，用之如泥沙？使负栋之柱，多于南亩之农夫；架梁之椽，多于机上之工女；钉头磷磷，多于在庾之粟粒；瓦缝参差，多于周身之帛缕；直栏横槛，多于九土之城郭；管弦呕哑，多于市人之言语。使天下之人，不敢言而敢怒。独夫之心，日益骄固。戍卒叫，函谷举，楚人一炬，可怜焦土！\n呜呼！灭六国者六国也，非秦也；族秦者秦也，非天下也。嗟乎！使六国各爱其人，则足以拒秦；使秦复爱六国之人，则递三世可至万世而为君，谁得而族灭也？秦人不暇自哀，而后人哀之；后人哀之而不鉴之，亦使后人而复哀后人也。"
+        }
+    };
+
+    // === 初始化 ===
+    window.onload = function() {
+        const select = document.getElementById('presetSelect');
+        for (const [key, val] of Object.entries(presets)) {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = val.title;
+            select.appendChild(option);
+        }
+        
+        select.value = "shudaonan";
+        loadPreset();
+    };
+
+    // === UI 交互函数 ===
+
+    function loadPreset() {
+        const key = document.getElementById('presetSelect').value;
+        if (presets[key]) {
+            document.getElementById('customInput').value = presets[key].content;
+            applyTextAndReset();
+        }
+    }
+
+    function applyTextAndReset() {
+        updateView();
+    }
+
+    function updateRatioDisplay() {
+        const val = document.getElementById('randomRatio').value;
+        document.getElementById('ratioDisplay').textContent = val + "%";
+    }
+
+    function updateFontSize() {
+        const val = document.getElementById('fontSizeSlider').value;
+        document.getElementById('fontSizeDisplay').textContent = val + "px";
+        document.documentElement.style.setProperty('--reading-size', val + "px");
+    }
+
+    function updateStyle() {
+        const style = document.getElementById('styleSelect').value;
+        const output = document.getElementById('output');
+        const qaCard = document.getElementById('qaCardContent');
+        
+        // 移除所有style-开头的类
+        const removeStyles = (el) => {
+            el.classList.forEach(cls => {
+                if (cls.startsWith('style-')) el.classList.remove(cls);
+            });
+            el.classList.add(style);
+        };
+        
+        removeStyles(output);
+        removeStyles(qaCard);
+    }
+
+    // === 核心逻辑函数 ===
+
+    function updateView() {
+        var text = document.getElementById('customInput').value;
+        text = ('　　' + text).replace(/\n/g, '\n　　'); 
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        
+        const randomConfig = document.getElementById('randomConfig');
+        const qaControls = document.getElementById('qaControls');
+        const normalOutput = document.getElementById('output');
+        const qaOutput = document.getElementById('qaOutput');
+
+        // UI 元素显隐控制
+        randomConfig.style.display = (mode === 'random') ? 'block' : 'none';
+        qaControls.style.display = (mode === 'qa') ? 'block' : 'none';
+
+        if (mode === 'qa') {
+            normalOutput.style.display = 'none';
+            qaOutput.style.display = 'flex';
+            generateAndRenderQuestion(text);
+        } else {
+            normalOutput.style.display = 'block';
+            qaOutput.style.display = 'none';
+            renderNormalMode(text, mode);
+        }
+    }
+
+    // --- 普通模式渲染 ---
+    function renderNormalMode(text, mode) {
+        const outputDiv = document.getElementById('output');
+        if (!text) {
+            outputDiv.innerHTML = '<span style="color:#94a3b8">请选择篇目或输入文本...</span>';
+            return;
+        }
+
+        const parts = text.split(/([^\u4e00-\u9fa5]+)/g);
+        let html = '';
+
+        parts.forEach(part => {
+            if (!part) return;
+            if (/[^\u4e00-\u9fa5]/.test(part)) {
+                const safePart = part.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                html += `<span class="punctuation">${safePart}</span>`;
+            } else {
+                html += processSegment(part, mode);
+            }
+        });
+        outputDiv.innerHTML = html;
+    }
+
+    function processSegment(segment, mode) {
+        let result = '';
+        const len = segment.length;
+        const ratio = document.getElementById('randomRatio').value / 100;
+
+        for (let i = 0; i < len; i++) {
+            const char = segment[i];
+            let shouldMask = true;
+
+            switch (mode) {
+                case 'all': shouldMask = true; break;
+                case 'head1': if (i === 0) shouldMask = false; break;
+                case 'head2': if (i < 2) shouldMask = false; break;
+                case 'headTail': if (i === 0 || i === len - 1) shouldMask = false; break;
+                case 'random': if (Math.random() < ratio) shouldMask = false; break;
+            }
+
+            if (shouldMask) {
+                result += `<span class="char masked" data-answer="${char}">${char}</span>`;
+            } else {
+                result += `<span class="char">${char}</span>`;
+            }
+        }
+        return result;
+    }
+
+    // --- QA (测试) 模式逻辑 ---
+    
+    let currentQAPairs = [];
+
+    function nextQuestion() {
+        const text = document.getElementById('customInput').value;
+        generateAndRenderQuestion(text);
+    }
+
+    function generateAndRenderQuestion(text) {
+        if (!text) return;
+
+        // 1. 解析文本，寻找合法的测试对
+        // 规则：被逗号、分号等连接的两个中文片段，不能跨越句号、感叹号、引号等。
+        const pairs = findValidPairs(text);
+
+        const cardContent = document.getElementById('qaCardContent');
+
+        if (pairs.length === 0) {
+            cardContent.innerHTML = "当前文本太短或没有标点，无法生成上下句测试。";
+            return;
+        }
+
+        // 2. 随机选取一对
+        const pair = pairs[Math.floor(Math.random() * pairs.length)];
+        
+        // 3. 随机决定方向 (0: 给出前句测后句, 1: 给出后句测前句)
+        const direction = Math.random() > 0.5 ? 0 : 1;
+
+        let html = '';
+        
+        // 生成HTML辅助函数：根据是否遮盖生成 span
+        const generateSpan = (str, isMasked) => {
+            if (!isMasked) return `<span class="char">${str}</span>`;
+            
+            // 对每个字进行遮盖
+            let s = '';
+            for(let c of str) {
+                s += `<span class="char masked" data-answer="${c}">${c}</span>`;
+            }
+            return s;
+        };
+
+        const safePunc = `<span class="punctuation">${pair.punc}</span>`;
+
+        if (direction === 0) {
+            // 给上句，测下句
+            html += generateSpan(pair.prev, false);
+            html += safePunc;
+            html += generateSpan(pair.next, true);
+        } else {
+            // 给下句，测上句
+            html += generateSpan(pair.prev, true);
+            html += safePunc;
+            html += generateSpan(pair.next, false);
+        }
+
+        cardContent.innerHTML = html;
+    }
+
+    // 复杂的文本解析算法：寻找合法句对
+    function findValidPairs(text) {
+        // 定义“停止符”：遇到这些符号，说明句子彻底结束，不能跨越测试
+        // 包含：句号、问号、感叹号、冒号、换行、引号(防止引号内外的逻辑混淆)
+        const stopRegex = /[。？;；！：:?!\n\r"“”'‘’]/;
+        
+        // 定义“连接符”：可以作为上下句连接的符号
+        // 包含：逗号、分号、顿号
+        const connectRegex = /[，,、]/;
+
+        // 1. 先按停止符切断成大块（Sentence Block）
+        // 使用 split 正则保留分隔符，以便我们知道边界，虽然这里我们其实只需要内容
+        const blocks = text.split(stopRegex);
+        
+        const validPairs = [];
+
+        blocks.forEach(block => {
+            if (!block.trim()) return;
+
+            // 2. 在大块内部，按连接符寻找中文片段
+            // 正则逻辑：(中文片段)(连接符)(中文片段)...
+            // 使用 matchAll 或简单的 split
+            // 这里我们手动遍历以确保精确控制
+            
+            // 简单的分词：分割出 [中文, 标点, 中文, 标点...]
+            // 注意：block可能包含 "中文,中文;中文"
+            const segments = [];
+            let buffer = '';
+            let lastType = 'none'; // 'text' or 'punc'
+
+            for (let char of block) {
+                if (connectRegex.test(char)) {
+                    // 是连接标点
+                    if (buffer && lastType === 'text') {
+                        segments.push({ type: 'text', val: buffer });
+                        buffer = '';
+                    }
+                    // 如果标点连续，合并处理或者单独存？这里简化，标点单独存
+                    segments.push({ type: 'punc', val: char });
+                    lastType = 'punc';
+                } else if (/[\u4e00-\u9fa5]/.test(char)) {
+                    // 是中文
+                    if (lastType === 'punc') {
+                        buffer = ''; // 新的文字段开始
+                    }
+                    buffer += char;
+                    lastType = 'text';
+                } else {
+                    // 其他字符（如空格、无关符号），忽略或视为断点？
+                    // 简单起见，如果buffer里有中文，视为一段结束
+                    // 但不存入标点，这样会断开连接
+                }
+            }
+            if (buffer && lastType === 'text') {
+                segments.push({ type: 'text', val: buffer });
+            }
+
+            // 3. 组装 Pairs
+            // segments 结构如: [{text:'蜀道之难'}, {punc:'，'}, {text:'难于上青天'}]
+            for (let i = 0; i < segments.length - 2; i++) {
+                const prev = segments[i];
+                const punc = segments[i+1];
+                const next = segments[i+2];
+
+                if (prev.type === 'text' && punc.type === 'punc' && next.type === 'text') {
+                    // 找到一对！
+                    validPairs.push({
+                        prev: prev.val,
+                        punc: punc.val,
+                        next: next.val
+                    });
+                }
+            }
+        });
+
+        return validPairs;
+    }
+
+    // 【新增】QA模式一键显示答案
+    function showQaAnswer() {
+        // 找到 QA 卡片里所有被遮盖的字，移除 'masked' 类名即可
+        const maskedChars = document.querySelectorAll('#qaCardContent .masked');
+        maskedChars.forEach(char => {
+            char.classList.remove('masked');
+            // 可选：加个颜色表示这是翻开的答案
+            char.style.color = '#10b981'; 
+        });
+    }
+
+</script>
+
+</body>
+</html>

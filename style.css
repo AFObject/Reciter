@@ -1,0 +1,445 @@
+:root {
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #1e293b;
+    --text-sub: #64748b;
+    --border: #e2e8f0;
+    --accent: #10b981;
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-reading: "Times New Roman", "Songti SC", "Noto Serif SC", STSong, serif;
+    --reading-size: 24px;
+    /* 默认字体大小 */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-ui);
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 24px;
+    height: calc(100vh - 40px);
+}
+
+/* 左侧控制面板 */
+.sidebar {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-sub);
+    margin-bottom: 10px;
+    font-weight: 600;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 4px;
+}
+
+.control-group {
+    margin-bottom: 8px;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    resize: vertical;
+    font-family: var(--font-reading);
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button.primary-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-weight: 500;
+}
+
+button.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+button.outline-btn {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+button.outline-btn:hover {
+    background: #eff6ff;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-size: 0.95rem;
+}
+
+.radio-label:hover {
+    background: #f1f5f9;
+}
+
+.radio-label input {
+    margin-right: 10px;
+    accent-color: var(--primary);
+}
+
+.radio-label.highlight {
+    border-color: var(--primary);
+    background: #eff6ff;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+/* 滑块通用样式 */
+.slider-wrapper {
+    margin-top: 5px;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    margin-bottom: 5px;
+}
+
+input[type=range] {
+    width: 100%;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+/* 右侧展示区域 */
+.main-content {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-title {
+    /* text-align: center; */
+    font-size: 1.5em;
+    font-weight: 900;
+    margin-bottom: 1.5em;
+    /* 标题和正文的距离 */
+    color: var(--text-main);
+}
+
+.output-area {
+    font-family: var(--font-reading);
+    font-size: var(--reading-size);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: var(--text-main);
+    transition: font-size 0.2s;
+}
+
+/* QA 模式专用容器 */
+.qa-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+.qa-card {
+    font-family: var(--font-reading);
+    font-size: calc(var(--reading-size) * 1.5);
+    /* QA模式字号大一点 */
+    margin-bottom: 40px;
+    line-height: 2;
+}
+
+.qa-hint {
+    color: var(--text-sub);
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* 遮盖样式逻辑 */
+.char {
+    display: inline-block;
+    min-width: 0.5em;
+    text-align: center;
+    transition: color 0.2s;
+    line-height: 1.1em;
+}
+
+.punctuation {
+    color: var(--text-sub);
+    font-weight: bold;
+    margin: 0 2px;
+}
+
+/* 遮盖状态 */
+.masked {
+    color: transparent;
+    user-select: none;
+    cursor: help;
+    position: relative;
+}
+
+/* 鼠标悬停偷看 */
+.masked:hover {
+    color: var(--accent);
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 2px;
+}
+
+.masked:hover::after {
+    content: none;
+}
+
+/* 遮盖样式：下划线 */
+.style-underline .masked {
+    border-bottom: 2px solid #cbd5e1;
+}
+
+/* 遮盖样式：方框 */
+.style-box .masked {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    margin: 0 1px;
+    background: #f8fafc;
+    min-width: 1em;
+}
+
+/* 遮盖样式：符号 */
+.style-symbol .masked::after {
+    content: '□';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    color: #cbd5e1;
+}
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        padding: 10px;
+    }
+
+    .container {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .sidebar {
+        height: auto;
+    }
+
+    .main-content {
+        min-height: 50vh;
+        padding: 20px;
+    }
+}
+
+.footer-note {
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* === 打印专用样式 (导出PDF时生效) === */
+@media print {
+
+    /* 1. 隐藏不需要的元素 */
+    .sidebar,
+    .footer-note,
+    button,
+    input[type=range] {
+        display: none !important;
+    }
+
+    /* 2. 重置容器布局，取消分栏 */
+    body,
+    .container {
+        display: block !important;
+        height: auto !important;
+        width: 100% !important;
+        padding: 0 !important;
+        background: white !important;
+        /* 去掉背景灰底 */
+        margin: 0 !important;
+    }
+
+    /* 3. 优化主内容区展示 */
+    .main-content {
+        box-shadow: none !important;
+        /* 去掉阴影 */
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
+        /* 关键：确保长文能跨页打印，不被截断 */
+        height: auto !important;
+    }
+
+    /* 4. 调整文字排版适配 A4 纸 */
+    .output-area {
+        font-size: 14pt !important;
+        /* 打印时字号稍微调整适合书写 */
+        line-height: 2.2 !important;
+        /* 行间距加大，方便默写填写 */
+        color: black !important;
+    }
+
+    /* 5. 确保 QA 模式卡片也能打印 */
+    .qa-container {
+        display: block !important;
+        height: auto !important;
+    }
+
+    .qa-card {
+        font-size: 16pt !important;
+        border: none !important;
+    }
+
+    .qa-hint {
+        display: none;
+    }
+
+    /* 打印时不显示提示语 */
+}
+
+/* === 外部数据标记样式 === */
+/* 字体颜色映射 (对应 colorMask) */
+.c-r {
+    color: #ef4444 !important;
+    font-weight: bold;
+}
+
+/* r = red */
+.c-g {
+    color: #10b981 !important;
+}
+
+/* g = green */
+.c-b {
+    color: #3b82f6 !important;
+}
+
+/* b = blue */
+
+/* 装饰样式映射 (对应 styleMask) */
+.s-u {
+    text-decoration: underline;
+    text-decoration-color: #94a3b8;
+    text-decoration-thickness: 2px;
+}
+
+/* u = underline */
+.s-w {
+    text-decoration: wavy underline;
+    text-decoration-color: #f59e0b;
+}
+
+/* w = wavy */
+.s-h {
+    background-color: rgba(254, 240, 138, 0.5);
+}
+
+/* h = highlight (背景黄) */
+
+/* 修复：确保遮盖模式下，颜色标记不泄露答案 */
+.masked.c-r,
+.masked.c-g,
+.masked.c-b {
+    color: transparent !important;
+}
+
+.masked.c-r:hover { color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
+.masked.c-g:hover { color: #10b981 !important; background-color: rgba(16, 185, 129, 0.1); }
+.masked.c-b:hover { color: #3b82f6 !important; background-color: rgba(59, 130, 246, 0.1); }
+
+/* 修复：遮盖模式下，下划线/背景色依然显示（作为提示），或者你想隐藏也可以在这里改 */
+/* 针对换行后的第一段文字实现视觉缩进，而不改变实际字符 */
+/* 这比较难完美实现，因为我们的 html 是一堆 span */
+/* 简单的替代方案：在 JSON 数据里，直接手动把段落开头的空格打进去。 */
+/* 或者，如果你只想要视觉效果： */
+br+span.char,
+br+span.punctuation {
+    margin-left: 2em;
+    /* 这是一个视觉 hack，可能不完美 */
+}

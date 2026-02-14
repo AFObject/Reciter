@@ -1,3 +1,38 @@
+@font-face {
+    font-family: 'ProjectReadingFont';
+    src: url('fonts/FZSSJW.TTF') format('truetype'); /* 请修改为你的实际路径和文件名 */
+    font-weight: normal; /* 将这个细体定义为“常规”字重 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ProjectReadingFont';
+    src: local("Songti SC Black"), local("SimSun"), local("Noto Serif SC"); 
+    font-weight: 900; /* 关键：声明这是粗体 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ProjectReadingFont';
+    src: url('fonts/FZXSSJW.TTF') format('truetype');
+    font-weight: bold; /* 关键：声明这是粗体 */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'UIFont';
+    src: url('fonts/LyonText-Bold-Web.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'UIFont';
+    src: url('fonts/LyonText-Regular-Web.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --primary: #3b82f6;
     --primary-hover: #2563eb;
@@ -7,10 +42,45 @@
     --text-sub: #64748b;
     --border: #e2e8f0;
     --accent: #10b981;
-    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-reading: "Times New Roman", "Songti SC", "Noto Serif SC", STSong, serif;
+    --outline-hover: #eff6ff;
+    --hidebox-border: #cbd5e1;
+    --hidebox-background: #f8fafc;
+    --font-ui: 'UIFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-reading: 'ProjectReadingFont', "Songti SC", "Noto Serif SC", STSong, serif;
     --reading-size: 24px;
+    --transition-speed: 0.3s; /* 增加一个过渡时间变量 */
     /* 默认字体大小 */
+}
+
+/* === 深色模式变量覆盖 === */
+[data-theme="dark"] {
+    --bg-page: #0f172a;      /* 深蓝灰背景 */
+    --bg-card: #1e293b;      /* 卡片背景 */
+    --text-main: #f1f5f9;    /* 主文字亮白 */
+    --text-sub: #94a3b8;     /* 次文字灰 */
+    --border: #334155;       /* 边框深色 */
+    --primary: #60a5fa;      /* 主色调调亮一点 */
+    --primary-hover: #3b82f6;
+    --outline-hover: #103667;
+    --hidebox-border: #475569;
+    --hidebox-background: #334155;
+}
+
+/* 让全局背景和文字颜色平滑过渡 */
+body, .sidebar, .main-content, textarea, input, select, button {
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}
+
+/* 深色模式下的特殊微调 */
+[data-theme="dark"] textarea,
+[data-theme="dark"] input[type="text"], 
+[data-theme="dark"] select {
+    background-color: #0f172a;
+    color: var(--text-main);
+}
+
+[data-theme="dark"] .style-underline .masked {
+    border-bottom-color: #475569;
 }
 
 * {
@@ -107,6 +177,7 @@ button {
 
 button.primary-btn {
     background: var(--primary);
+    font-family: var(--font-ui);
     color: white;
     border: none;
     font-weight: 500;
@@ -125,7 +196,7 @@ button.outline-btn {
 }
 
 button.outline-btn:hover {
-    background: #eff6ff;
+    background: var(--outline-hover);
 }
 
 .radio-group {
@@ -146,7 +217,7 @@ button.outline-btn:hover {
 }
 
 .radio-label:hover {
-    background: #f1f5f9;
+    background: var(--outline-hover);
 }
 
 .radio-label input {
@@ -156,7 +227,7 @@ button.outline-btn:hover {
 
 .radio-label.highlight {
     border-color: var(--primary);
-    background: #eff6ff;
+    background: var(--outline-hover);
     color: var(--primary);
     font-weight: bold;
 }
@@ -196,7 +267,7 @@ input[type=range] {
     /* text-align: center; */
     font-size: 1.5em;
     font-weight: 900;
-    margin-bottom: 1.5em;
+    margin-bottom: 0.5em;
     /* 标题和正文的距离 */
     color: var(--text-main);
 }
@@ -275,10 +346,10 @@ input[type=range] {
 
 /* 遮盖样式：方框 */
 .style-box .masked {
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--hidebox-border);
     border-radius: 4px;
     margin: 0 1px;
-    background: #f8fafc;
+    background: var(--hidebox-background);
     min-width: 1em;
 }
 
@@ -386,21 +457,17 @@ input[type=range] {
 /* === 外部数据标记样式 === */
 /* 字体颜色映射 (对应 colorMask) */
 .c-r {
-    color: #ef4444 !important;
+    color: #ef4444;
     font-weight: bold;
 }
-
-/* r = red */
 .c-g {
-    color: #10b981 !important;
+    color: #10b981;
+    font-weight: bold;
 }
-
-/* g = green */
 .c-b {
-    color: #3b82f6 !important;
+    color: #3b82f6;
+    font-weight: bold;
 }
-
-/* b = blue */
 
 /* 装饰样式映射 (对应 styleMask) */
 .s-u {
@@ -423,11 +490,6 @@ input[type=range] {
 /* h = highlight (背景黄) */
 
 /* 修复：确保遮盖模式下，颜色标记不泄露答案 */
-.masked.c-r,
-.masked.c-g,
-.masked.c-b {
-    color: transparent !important;
-}
 
 .masked.c-r:hover { color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
 .masked.c-g:hover { color: #10b981 !important; background-color: rgba(16, 185, 129, 0.1); }
@@ -439,7 +501,75 @@ input[type=range] {
 /* 简单的替代方案：在 JSON 数据里，直接手动把段落开头的空格打进去。 */
 /* 或者，如果你只想要视觉效果： */
 br+span.char,
-br+span.punctuation {
-    margin-left: 2em;
+br+span.punctuation, div+span.char, div+span.punctuation {
+    margin-left: 2em !important;
     /* 这是一个视觉 hack，可能不完美 */
 }
+
+/* === 隐藏标记的逻辑 === */
+/* 当 body 拥有 hide-marks 类时，强制覆盖所有标记样式 */
+body.hide-marks .c-r, 
+body.hide-marks .c-g, 
+body.hide-marks .c-b {
+    color: inherit; /* 恢复默认文字颜色 */
+    font-weight: inherit;
+}
+
+body.hide-marks .s-u,
+body.hide-marks .s-w,
+body.hide-marks .s-h {
+    text-decoration: none !important; /* 去掉下划线 */
+    background-color: transparent;
+    /* background-color: var(--hidebox-background); */
+}
+
+.masked.c-r,
+.masked.c-g,
+.masked.c-b {
+    color: transparent !important;
+}
+
+.masked {
+    background-color: var(--hidebox-background) !important;
+}
+
+/* === 文章元信息 (Capsule 样式) === */
+.meta-container {
+    display: flex;
+    /* justify-content: center; 居中显示 */
+    gap: 10px;               /* 标签之间的间距 */
+    margin-top: -10px;       /* 拉近与标题的距离 */
+    margin-bottom: 30px;     /* 拉开与正文的距离 */
+    flex-wrap: wrap;         /* 防止手机上溢出 */
+}
+
+.meta-tag {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 99px;     /* 胶囊圆角 */
+    font-size: 0.85rem;      /* 字号稍小 */
+    font-family: var(--font-ui); /* 使用无衬线字体，更现代 */
+    font-weight: 500;
+    
+    /* 浅色模式配色 */
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid transparent;
+    transition: all var(--transition-speed);
+}
+
+.meta-icon {
+    margin-right: 6px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .meta-tag {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 打印时隐藏 (如果你不想打印出来) */
+@media print { .meta-icon { display: none; } }

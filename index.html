@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高考语文背诵辅助器 Pro</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Reciter - 背诵助手</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -14,7 +14,7 @@
         <!-- 侧边栏：设置与输入 -->
         <aside class="sidebar">
             <div>
-                <h1>📖 背诵助手 Pro</h1>
+                <h1>Reciter - 背诵助手</h1>
                 <p style="color: var(--text-sub); font-size: 0.9rem;">高考语文必备篇目辅助</p>
             </div>
 
@@ -48,10 +48,10 @@
                         <input type="radio" name="mode" value="head1" onchange="updateView()">
                         提示首字
                     </label>
-                    <label class="radio-label">
+                    <!-- <label class="radio-label">
                         <input type="radio" name="mode" value="headTail" onchange="updateView()">
                         提示首尾字
-                    </label>
+                    </label> -->
                     <label class="radio-label">
                         <input type="radio" name="mode" value="random" onchange="updateView()">
                         随机挖空
@@ -86,11 +86,18 @@
                 <h2>视觉与显示</h2>
                 <div class="control-group">
                     <select id="styleSelect" onchange="updateStyle()">
-                        <option value="style-box" selected>遮盖样式：方框 (□)</option>
-                        <option value="style-underline">遮盖样式：下划线 (_)</option>
+                        <option value="style-box" selected>遮盖样式：方框</option>
+                        <option value="style-underline">遮盖样式：下划线</option>
                         <!-- <option value="style-symbol">遮盖样式：符号 (□)</option> -->
-                        <option value="style-invisible">遮盖样式：隐形 ( )</option>
+                        <option value="style-invisible">遮盖样式：隐形</option>
                     </select>
+                </div>
+                <div class="control-group">
+                    <label class="radio-label">
+                        <input type="checkbox" id="toggleMarks" checked onchange="document.body.classList.toggle('hide-marks', !this.checked)">
+                        显示颜色与标记
+                    </label>
+                    <button class="outline-btn" onclick="toggleDarkMode()">切换深色模式</button>
                 </div>
                 <!-- 字体大小滑块 -->
                 <div class="slider-wrapper">
@@ -102,14 +109,14 @@
                 </div>
                 <!-- 【新增】导出按钮 -->
                 <div class="control-group" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e2e8f0;">
-                    <button class="primary-btn" style="background-color: #475569;" onclick="window.print()">🖨️ 导出为默写纸 /
+                    <button class="primary-btn" style="background-color: #475569;" onclick="window.print()">导出为默写纸 /
                         PDF</button>
                 </div>
 
             </div>
 
             <div class="footer-note">
-                提示：鼠标悬停(或点击)遮盖处可偷看答案。
+                👀 鼠标悬停遮盖处可偷看答案
             </div>
         </aside>
 
@@ -126,9 +133,9 @@
         </main>
     </div>
     <div id="selectionPopup"
-        style="position: absolute; display: none; background: #333; padding: 4px 8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; transform: translateY(-120%);">
+        style="position: absolute; display: none; background: #333; padding: 0px 6px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; transform: translateY(-120%);">
         <!-- 使用 flex 布局，小图标风格 -->
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 6px;">
             <button onclick="applyMark('c', 'r')"
                 style="background:none; border:none; color:#ef4444; font-weight:bold; cursor:pointer; font-size:16px;"
                 title="红字">R</button>
@@ -140,14 +147,17 @@
                 title="蓝字">B</button>
             <div style="width:1px; background:#555; margin:0 2px;"></div>
             <button onclick="applyMark('s', 'u')"
-                style="background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-size:14px;"
+                style="background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-size:16px;"
                 title="下划线">U</button>
+            <button onclick="applyMark('s', 'w')"
+                style="background:none; border:none; color:orange; text-decoration:underline wavy; cursor:pointer; font-size:16px;"
+                title="波浪线">W</button>
             <button onclick="applyMark('s', 'h')"
-                style="background:none; border:none; color:#fde047; font-weight:bold; cursor:pointer; font-size:14px;"
+                style="background:none; border:none; color:#fde047; font-weight:bold; cursor:pointer; font-size:16px;"
                 title="高亮">H</button>
             <div style="width:1px; background:#555; margin:0 2px;"></div>
             <button onclick="applyMark('clean')"
-                style="background:none; border:none; color:#999; cursor:pointer; font-size:14px;" title="清除">✖</button>
+                style="background:none; border:none; color:#999; cursor:pointer; font-size:16px;" title="清除">×</button>
         </div>
         <!-- 小箭头装饰 -->
         <div
@@ -155,9 +165,9 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="qa.js"></script>
-    <script src="edit.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/qa.js"></script>
+    <script src="js/edit.js"></script>
 
 </body>
 

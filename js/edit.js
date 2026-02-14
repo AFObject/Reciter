@@ -1,4 +1,11 @@
+function checkEditMode() {
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const a = document.body.classList.contains('hide-marks');
+    return (mode === 'show' && !a);
+}
+
 document.addEventListener('mouseup', function(e) {
+    if (!checkEditMode()) return;
     const popup = document.getElementById('selectionPopup');
     const selection = window.getSelection();
     
@@ -168,6 +175,7 @@ async function saveToServer() {
 }
 
 document.addEventListener('keydown', function(e) {
+    if (!checkEditMode()) return;
     // 只有在选区存在时才触发
     const selection = window.getSelection();
     if (selection.isCollapsed) return;

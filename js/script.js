@@ -18,7 +18,7 @@ async function loadCatalog() {
         const response = await fetch('data/catalog.json');
         const list = await response.json();
         const select = document.getElementById('presetSelect');
-        select.innerHTML = '<option value="" disabled selected>-- 选择篇目 --</option>';
+        select.innerHTML = '<option value="" disabled selected>选择篇目</option>';
         list.forEach(item => {
             const option = document.createElement('option');
             option.value = item.filename; // value 存文件名
@@ -37,7 +37,9 @@ async function loadPreset() {
 
     currentFilename = filename;
     try {
-        const response = await fetch(`data/${filename}`);
+        const response = await fetch(`data/${filename}?t=${new Date().getTime()}`, {
+            cache: "no-store"
+        });
         const data = await response.json();
 
         // 数据校验与补全：如果 mask 不存在或长度不对，自动修正
@@ -101,6 +103,33 @@ function renderNormalMode(text, mode) {
     let html = '';
     const titleVal = document.getElementById('customTitle').value;
     if (titleVal) html += `<div class="article-title">${titleVal}</div>`;
+
+    // === 【新增】渲染元信息 (Capsules) ===
+    // 只有当 currentArticleData 存在时才渲染
+    if (currentArticleData) {
+        let metaHtml = '<div class="meta-container">';
+        
+        // 辅助函数：生成单个胶囊
+        const addCapsule = (text, icon) => {
+            if (text) {
+                metaHtml += `<span class="meta-tag"><span class="meta-icon">${icon}</span>${text}</span>`;
+            }
+        };
+
+        // 从 JSON 中读取属性 (你可以根据需要加更多)
+        // 假设 json 里是 { "author": "李白", "textbook": "必修三", "dynasty": "唐" }
+        addCapsule(currentArticleData.dynasty, '🏛️'); // 朝代
+        addCapsule(currentArticleData.author,  '✍️'); // 作者
+        addCapsule(currentArticleData.textbook, '📘'); // 课本/出处
+        addCapsule(`字数 / ${currentArticleData.content.replace('\n', '').length}`, '📊'); // 字数
+        
+        metaHtml += '</div>';
+        
+        // 只有生成了内容才添加到 html 中
+        if (metaHtml !== '<div class="meta-container"></div>') {
+            html += metaHtml;
+        }
+    }
 
     // 核心渲染循环：按标点分割，但严格追踪 Index
     // 正则：分割中文和非中文
@@ -195,3 +224,20 @@ function updateFontSize() {
     document.getElementById('fontSizeDisplay').textContent = val + "px";
     document.documentElement.style.setProperty('--reading-size', val + "px");
 }
+
+function toggleDarkMode() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    // 切换属性
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    
+    // (可选) 保存偏好到本地存储，刷新后还在
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+
+// 在 window.onload 的最开头添加读取偏好
+window.addEventListener('DOMContentLoaded', () => { // 用 DOMContentLoaded 比 onload 更快防止闪烁
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+});

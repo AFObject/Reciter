@@ -1,50 +1,45 @@
-import http.server
-import socketserver
-import json
+from flask import Flask, request, jsonify, send_from_directory
 import os
+import json
 
-PORT = 1075
-DATA_DIR = 'data'
+# 初始化 Flask
+# static_folder='.' 表示直接把当前根目录作为静态文件目录
+app = Flask(__name__, static_folder='.', static_url_path='')
 
-class CustomHandler(http.server.SimpleHTTPRequestHandler):
-    def do_POST(self):
-        # 拦截 /save 请求，用于保存文件
-        if self.path == '/save':
-            try:
-                content_length = int(self.headers['Content-Length'])
-                post_data = self.rfile.read(content_length)
-                request_data = json.loads(post_data.decode('utf-8'))
-                
-                filename = request_data.get('filename')
-                content = request_data.get('content')
-                
-                # 安全检查：只允许写入 data 目录
-                target_path = os.path.join(DATA_DIR, os.path.basename(filename))
-                
-                # 写入 JSON 文件
-                with open(target_path, 'w', encoding='utf-8') as f:
-                    json.dump(content, f, ensure_ascii=False, indent=2)
-                
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({'status': 'success'}).encode('utf-8'))
-                print(f"Saved: {target_path}")
-                
-            except Exception as e:
-                self.send_response(500)
-                self.end_headers()
-                print(f"Error: {e}")
-        else:
-            # 其他 POST 请求交给父类处理（虽然通常静态服务器不处理POST）
-            super().do_POST()
+DATA_DIR = '/tmp'  # ⚠️ 关键修改：Vercel 只允许写入 /tmp 目录
 
-print(f"Server started at http://localhost:{PORT}")
-print("Press Ctrl+C to stop")
+@app.route('/')
+def index():
+    # 访问域名直接返回 index.html
+    return send_from_directory('.', 'index.html')
 
-# 确保 data 目录存在
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
+@app.route('/save', methods=['POST'])
+def save_data():
+    try:
+        request_data = request.json
+        filename = request_data.get('filename')
+        content = request_data.get('content')
 
-with socketserver.TCPServer(("", PORT), CustomHandler) as httpd:
-    httpd.serve_forever()
+        if not filename or content is None:
+            return jsonify({'error': 'Missing filename or content'}), 400
+
+        # ⚠️ 注意：/tmp 目录下的文件是临时的，过几分钟可能会消失
+        # 如果要永久保存，必须改用数据库 (如 MongoDB / Postgres / Vercel KV)
+        target_path = os.path.join(DATA_DIR, os.path.basename(filename))
+
+        with open(target_path, 'w', encoding='utf-8') as f:
+            json.dump(content, f, ensure_ascii=False, indent=2)
+
+        print(f"Saved to temporary storage: {target_path}")
+        return jsonify({'status': 'success', 'path': target_path})
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# 这一行是必须的，为了兼容 Vercel
+app = app
+
+if __name__ == "__main__":
+    # app.run()
+    app.run(debug=True)

@@ -6,7 +6,7 @@ import json
 # static_folder='.' 表示直接把当前根目录作为静态文件目录
 app = Flask(__name__, static_folder='.', static_url_path='')
 
-DATA_DIR = '/tmp'  # ⚠️ 关键修改：Vercel 只允许写入 /tmp 目录
+DATA_DIR = './data'  # ⚠️ 关键修改：Vercel 只允许写入 /tmp 目录
 
 @app.route('/')
 def index():

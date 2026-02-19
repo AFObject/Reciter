@@ -572,4 +572,4 @@ body.hide-marks .s-h {
 }
 
 /* 打印时隐藏 (如果你不想打印出来) */
-@media print { .meta-icon { display: none; } }
+@media print { .meta-container { display: none; } }

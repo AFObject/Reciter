@@ -15,7 +15,9 @@ window.onload = async function () {
 
 async function loadCatalog() {
     try {
-        const response = await fetch('data/catalog.json');
+        const response = await fetch(`data/catalog.json?t=${new Date().getTime()}`, {
+            cache: "no-store"
+        });
         const list = await response.json();
         const select = document.getElementById('presetSelect');
         select.innerHTML = '<option value="" disabled selected>选择篇目</option>';

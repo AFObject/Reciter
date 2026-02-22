@@ -2,5 +2,13 @@
   { "id": "chibifu", "title": "赤壁赋", "filename": "chibifu.json" },
   { "id": "liuguolun", "title": "六国论", "filename": "liuguolun.json" },
   { "id": "quyuanliezhuan", "title": "屈原列传", "filename": "quyuanliezhuan.json" },
-  { "id": "quanxue", "title": "劝学", "filename": "quanxue.json" }
+  { "id": "quanxue", "title": "劝学", "filename": "quanxue.json" },
+  { "id": "lisao", "title": "离骚", "filename": "lisao.json" },
+  { "id": "shudaonan", "title": "蜀道难", "filename": "shudaonan.json" },
+  { "id": "chenqingbiao", "title": "陈情表", "filename": "chenqingbiao.json" },
+  { "id": "lantingjixu", "title": "兰亭集序", "filename": "lantingjixu.json" },
+  { "id": "shishuo", "title": "师说", "filename": "shishuo.json" },
+  { "id": "mengyou", "title": "梦游天姥吟留别", "filename": "mengyou.json" },
+  { "id": "epanggongfu", "title": "阿房宫赋", "filename": "epanggongfu.json" },
+  { "id": "guoqinlun", "title": "过秦论", "filename": "guoqinlun.json" }
 ]

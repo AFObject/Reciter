@@ -60,11 +60,11 @@ function generateAndRenderQuestion(text) {
 function findValidPairs(text) {
     // 定义“停止符”：遇到这些符号，说明句子彻底结束，不能跨越测试
     // 包含：句号、问号、感叹号、冒号、换行、引号(防止引号内外的逻辑混淆)
-    const stopRegex = /[。？！：:?!\n\r"“”'‘’]/;
+    const stopRegex = /[。？！：:?!\n\r"“”'‘’；;]/;
     
     // 定义“连接符”：可以作为上下句连接的符号
     // 包含：逗号、分号、顿号
-    const connectRegex = /[，,；;、]/;
+    const connectRegex = /[，,、]/;
 
     // 1. 先按停止符切断成大块（Sentence Block）
     // 使用 split 正则保留分隔符，以便我们知道边界，虽然这里我们其实只需要内容

@@ -20,11 +20,17 @@ async function loadCatalog() {
         });
         const list = await response.json();
         const select = document.getElementById('presetSelect');
-        select.innerHTML = '<option value="" disabled selected>选择篇目</option>';
+        var cnt = 0;
         list.forEach(item => {
             const option = document.createElement('option');
-            option.value = item.filename; // value 存文件名
             option.textContent = item.title;
+            if (item.id == "--seperator") {
+                option.disabled = true;
+            } else {
+                cnt += 1;
+                option.value = item.filename;
+                option.textContent = cnt + '. ' + item.title;
+            }
             select.appendChild(option);
         });
     } catch (e) {

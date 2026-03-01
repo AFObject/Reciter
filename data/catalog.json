@@ -1,14 +1,32 @@
 [
-  { "id": "chibifu", "title": "赤壁赋", "filename": "chibifu.json" },
-  { "id": "liuguolun", "title": "六国论", "filename": "liuguolun.json" },
-  { "id": "quyuanliezhuan", "title": "屈原列传", "filename": "quyuanliezhuan.json" },
-  { "id": "quanxue", "title": "劝学", "filename": "quanxue.json" },
-  { "id": "lisao", "title": "离骚", "filename": "lisao.json" },
-  { "id": "shudaonan", "title": "蜀道难", "filename": "shudaonan.json" },
-  { "id": "chenqingbiao", "title": "陈情表", "filename": "chenqingbiao.json" },
-  { "id": "lantingjixu", "title": "兰亭集序", "filename": "lantingjixu.json" },
-  { "id": "shishuo", "title": "师说", "filename": "shishuo.json" },
+  { "id": "--seperator", "title": "必修上"},
+  { "id": "qinyuanchun", "title": "沁园春·长沙", "filename": "qingyuanchun.json" },
+  { "id": "duangexing", "title": "短歌行", "filename": "duangexing.json" },
   { "id": "mengyou", "title": "梦游天姥吟留别", "filename": "mengyou.json" },
+  { "id": "denggao", "title": "登高", "filename": "denggao.json" },
+  { "id": "niannujiao", "title": "念奴娇·赤壁怀古", "filename": "niannujiao.json" },
+  { "id": "quanxue", "title": "劝学", "filename": "quanxue.json" },
+  { "id": "shishuo", "title": "师说（第一段）", "filename": "shishuo.json" },
+  { "id": "chibifu", "title": "赤壁赋", "filename": "chibifu.json" },
+
+  { "id": "--seperator", "title": "必修下"},
+  { "id": "shizuo", "title": "子路、曾皙、冉有、公西华侍坐", "filename": "shizuo.json" },
   { "id": "epanggongfu", "title": "阿房宫赋", "filename": "epanggongfu.json" },
-  { "id": "guoqinlun", "title": "过秦论", "filename": "guoqinlun.json" }
+  { "id": "liuguolun", "title": "六国论", "filename": "liuguolun.json" },
+
+  { "id": "--seperator", "title": "选必上"},
+  { "id": "lunyu12zhang", "title": "《论语》十二章", "filename": "lunyu12zhang.json" },
+  { "id": "daxuezhidao", "title": "大学之道", "filename": "daxuezhidao.json" },
+  { "id": "laozisizhang", "title": "老子四章", "filename": "laozisizhang.json" },
+
+  { "id": "--seperator", "title": "选必中"},
+  { "id": "quyuanliezhuan", "title": "屈原列传（第三段）", "filename": "quyuanliezhuan.json" },
+  { "id": "guoqinlun", "title": "过秦论", "filename": "guoqinlun.json" },
+
+  { "id": "--seperator", "title": "选必下"},
+  { "id": "lisao", "title": "离骚（第三段）", "filename": "lisao.json" },
+  { "id": "shudaonan", "title": "蜀道难", "filename": "shudaonan.json" },
+  { "id": "shuxiang", "title": "蜀相", "filename": "shuxiang.json" },
+  { "id": "chenqingbiao", "title": "陈情表", "filename": "chenqingbiao.json" },
+  { "id": "lantingjixu", "title": "兰亭集序", "filename": "lantingjixu.json" }
 ]

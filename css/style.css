@@ -1,21 +1,21 @@
 @font-face {
     font-family: 'ProjectReadingFont';
-    src: url('fonts/FZSSJW.TTF') format('truetype'); /* 请修改为你的实际路径和文件名 */
-    font-weight: normal; /* 将这个细体定义为“常规”字重 */
+    src: url('fonts/FZSSJW.TTF') format('truetype');
+    font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'ProjectReadingFont';
-    src: local("Songti SC Black"), local("SimSun"), local("Noto Serif SC"); 
-    font-weight: 900; /* 关键：声明这是粗体 */
+    src: url('fonts/black.ttf'), local("SimSun"), local("Noto Serif SC"); 
+    font-weight: 900;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'ProjectReadingFont';
     src: url('fonts/FZXSSJW.TTF') format('truetype');
-    font-weight: bold; /* 关键：声明这是粗体 */
+    font-weight: bold;
     font-style: normal;
 }
 
@@ -144,6 +144,10 @@ h2 {
 
 .control-group {
     margin-bottom: 8px;
+}
+
+#presetSelect {
+    font-family: var(--font-ui);
 }
 
 textarea {

@@ -129,7 +129,7 @@ function renderNormalMode(text, mode) {
         addCapsule(currentArticleData.dynasty, '🏛️'); // 朝代
         addCapsule(currentArticleData.author,  '✍️'); // 作者
         addCapsule(currentArticleData.textbook, '📘'); // 课本/出处
-        addCapsule(`字数 / ${currentArticleData.content.replace('\n', '').length}`, '📊'); // 字数
+        addCapsule(`字数 / ${currentArticleData.content.match(/[\u4e00-\u9fa5]/g).length}`, '📊'); // 字数
         
         metaHtml += '</div>';
         
